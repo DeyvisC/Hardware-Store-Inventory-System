@@ -20,20 +20,15 @@ public class VentanaInventario extends javax.swing.JFrame {
         setLocationRelativeTo(null); // Centra la ventana
         setTitle("Inventario - Todo Construcción");
         
-        // Esta línea llama al método que llena la tabla
         cargarDatosInventario();
     }
-     // Método para leer el archivo y llenar la tabla
       private void cargarDatosInventario() {
-        // 1. Conectar con el repositorio
         datos.Repositorio repo = new datos.Repositorio();
         java.util.ArrayList<modelo.Producto> lista = repo.cargarProductos();
 
-        // 2. Obtener el modelo de la tabla
         javax.swing.table.DefaultTableModel modelo = (javax.swing.table.DefaultTableModel) tblInventario.getModel();
-        modelo.setRowCount(0); // Limpiamos la tabla primero
+        modelo.setRowCount(0);
 
-        // 3. Rellenar filas
         for (modelo.Producto p : lista) {
             Object[] fila = new Object[3];
             fila[0] = p.getNombre();
@@ -253,35 +248,26 @@ public class VentanaInventario extends javax.swing.JFrame {
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
         try {
-            // A. CAPTURAR DATOS
             if (txtNombre.getText().isEmpty() || txtPrecio.getText().isEmpty() || txtStock.getText().isEmpty()) {
                 javax.swing.JOptionPane.showMessageDialog(this, "Por favor, llene todos los campos.");
                 return;
             }
 
             String nombre = txtNombre.getText();
-            double precio = Double.parseDouble(txtPrecio.getText()); // Convierte texto a decimal
-            int stock = Integer.parseInt(txtStock.getText());        // Convierte texto a entero
-            // --- NUEVO: VALIDACIÓN DE NEGATIVOS ---
+            double precio = Double.parseDouble(txtPrecio.getText());
+            int stock = Integer.parseInt(txtStock.getText());
     if (precio < 0 || stock < 0) {
-        // Lanzamos una excepción manual para detener el proceso
         throw new Exception("El precio y el stock no pueden ser negativos.");
     }
-    // --------------------------------------
 
-            // B. CREAR EL PRODUCTO
-            // Generamos un código automático simple usando la hora del sistema
             String codigoAuto = "PROD" + System.currentTimeMillis() % 10000;
             
-            // Creamos el objeto (Pasillo y Estante los dejamos en 0 por ahora)
             modelo.Producto nuevoProd = new modelo.Producto(codigoAuto, nombre, precio, stock, 0, 0);
 
-            // C. GUARDAR EN EL ARCHIVO
             datos.Repositorio repo = new datos.Repositorio();
-            repo.agregarProducto(nuevoProd); // <--- ESTE MÉTODO LO CREAMOS EN EL PASO ANTERIOR
+            repo.agregarProducto(nuevoProd);
 
-            // D. ACTUALIZAR LA TABLA Y LIMPIAR
-            cargarDatosInventario(); // Recarga la tabla para ver el nuevo producto
+            cargarDatosInventario();
             
             txtNombre.setText("");
             txtPrecio.setText("");
@@ -290,7 +276,6 @@ public class VentanaInventario extends javax.swing.JFrame {
             javax.swing.JOptionPane.showMessageDialog(this, "¡Producto guardado con éxito!");
 
         } catch (NumberFormatException e) {
-            // Si el usuario escribe letras en precio o stock, sale este error
             javax.swing.JOptionPane.showMessageDialog(this, "Error: El Precio y el Stock deben ser números.");
         } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error: " + e.getMessage());
@@ -298,7 +283,6 @@ public class VentanaInventario extends javax.swing.JFrame {
     }//GEN-LAST:event_btnGuardarActionPerformed
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
-           // 1. Verificar si el usuario seleccionó una fila
     int filaSeleccionada = tblInventario.getSelectedRow();
     
     if (filaSeleccionada == -1) {
@@ -306,7 +290,6 @@ public class VentanaInventario extends javax.swing.JFrame {
         return;
     }
     
-    // 2. Preguntar confirmación (Por seguridad)
     String nombre = tblInventario.getValueAt(filaSeleccionada, 0).toString();
     
     int confirmacion = javax.swing.JOptionPane.showConfirmDialog(this, 
@@ -314,13 +297,10 @@ public class VentanaInventario extends javax.swing.JFrame {
             "Confirmar Eliminación", 
             javax.swing.JOptionPane.YES_NO_OPTION);
     
-    // Si dice que SÍ (Opción 0)
     if (confirmacion == 0) {
-        // 3. Llamar al repositorio para borrar
         datos.Repositorio repo = new datos.Repositorio();
         repo.eliminarProducto(nombre);
         
-        // 4. Actualizar la tabla
         cargarDatosInventario();
         javax.swing.JOptionPane.showMessageDialog(this, "Producto eliminado.");
     }
@@ -334,14 +314,11 @@ public class VentanaInventario extends javax.swing.JFrame {
     }
 
     try {
-        // 2. Capturar los datos de las cajas
         String nombre = txtNombre.getText();
-        int nuevoStock = Integer.parseInt(txtStock.getText()); // El usuario escribe el nuevo stock aquí
-       // 3. Llamar al repositorio
+        int nuevoStock = Integer.parseInt(txtStock.getText());
         datos.Repositorio repo = new datos.Repositorio();
         repo.actualizarStock(nombre, nuevoStock);
         
-        // 4. Refrescar la tabla y limpiar
         cargarDatosInventario();
         javax.swing.JOptionPane.showMessageDialog(this, "¡Stock actualizado!");
         
@@ -357,17 +334,12 @@ public class VentanaInventario extends javax.swing.JFrame {
     private void tblInventarioMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblInventarioMouseClicked
       int fila = tblInventario.getSelectedRow();
     
-    // 1. Recuperar el texto completo (Ej: "S/ 28.5")
     String precioTexto = tblInventario.getValueAt(fila, 2).toString();
     
-    // 2. TRUCO: Reemplazar "S/ " por nada (borrarlo)
-    // Así "S/ 28.5" se convierte en "28.5"
     String precioLimpio = precioTexto.replace("S/ ", "").replace("S/", ""); 
     
-    // 3. Poner solo el número en la caja
     txtPrecio.setText(precioLimpio);
     
-    // Cargar también el nombre si quieres
     txtNombre.setText(tblInventario.getValueAt(fila, 0).toString());
 
     }//GEN-LAST:event_tblInventarioMouseClicked
@@ -378,31 +350,23 @@ public class VentanaInventario extends javax.swing.JFrame {
 
     private void txtBuscarKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBuscarKeyReleased
         // TODO add your handling code here:
-        // 1. Obtener lo que el usuario está escribiendo (en minúsculas para comparar fácil)
         String texto = txtBuscar.getText().toLowerCase();
         
-        // 2. Limpiar la tabla actual (Borrar todo visualmente)
         javax.swing.table.DefaultTableModel modelo = (javax.swing.table.DefaultTableModel) tblInventario.getModel();
         modelo.setRowCount(0);
         
-        // 3. Traer la lista completa del repositorio
         datos.Repositorio repo = new datos.Repositorio();
         java.util.ArrayList<modelo.Producto> listaCompleta = repo.cargarProductos();
         
-        // 4. EL FILTRO: Recorremos la lista y solo agregamos los que coinciden
         for (modelo.Producto p : listaCompleta) {
             
-            // Verificamos si el NOMBRE empieza o contiene lo que escribiste
             if (p.getNombre().toLowerCase().contains(texto)) {
                 
-                // Si coincide, creamos la fila y la agregamos a la tabla
-                Object[] fila = new Object[4]; // Ajusta el número según tus columnas (Codigo, Nombre, Precio, Stock)
+                Object[] fila = new Object[4];
                 
-                // NOTA: Asegúrate de poner los datos en el ORDEN de tu tabla
                 fila[0] = p.getNombre(); 
                 fila[1] = p.getPrecio();
                 fila[2] = p.getStock();
-                // Si tienes columna de código u otra cosa, agrégala aquí
                 
                 modelo.addRow(fila);
             }
@@ -429,15 +393,10 @@ public class VentanaInventario extends javax.swing.JFrame {
     }
 
     try {
-        // 3. Capturar el nuevo precio (convirtiendo texto a número)
         double nuevoPrecio = Double.parseDouble(txtPrecio.getText());
         
-        // 4. ACTUALIZAR LA TABLA
-        // setValueAt(VALOR, FILA, COLUMNA)
-        // Según tu foto, el PRECIO es la Columna 2 (0=Nombre, 1=Stock, 2=Precio)
         tblInventario.setValueAt("S/ " + nuevoPrecio, filaSeleccionada, 2);
         
-        // 5. Limpiar y avisar
         txtPrecio.setText("");
         javax.swing.JOptionPane.showMessageDialog(this, "¡Precio actualizado correctamente!");
         
