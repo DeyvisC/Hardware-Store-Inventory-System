@@ -27,7 +27,7 @@ public class Repositorio {
                     lista.add(p);
                 }
             }
-        } catch (Exception e) { //archivo no existe
+        } catch (Exception e) {
             System.out.println("Error leyendo: " + e.getMessage());
         }
         return lista;
@@ -36,7 +36,6 @@ public class Repositorio {
     // --- 2. GUARDAR (ESCRIBIR) ---
     public void guardarProductos(ArrayList<Producto> lista) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(ARCHIVO))) {
-            //borra todo el contenido del archivo par reescribirlo desde 0 
             for (Producto p : lista) {
                 bw.write(p.toString());
                 bw.newLine();
@@ -55,14 +54,14 @@ public class Repositorio {
 
     // --- 4. ACTUALIZAR STOCK  ---
     public void actualizarStock(String nombre, int nuevoStock) {
-        ArrayList<Producto> lista = cargarProductos();//sube todo a memoria
-        for (Producto p : lista) {//busca uno por uno
-            if (p.getNombre().equals(nombre)) {//verifica el nombre del producto
-                p.setStock(nuevoStock); //cambia el número de stock en la memoria
+        ArrayList<Producto> lista = cargarProductos();
+        for (Producto p : lista) {
+            if (p.getNombre().equals(nombre)) {
+                p.setStock(nuevoStock);
                 break;
             }
         }
-        guardarProductos(lista); //guarda los cambios en el archivo
+        guardarProductos(lista);
     }
 
     // --- 5. ELIMINAR PRODUCTO  ---
@@ -80,15 +79,15 @@ public class Repositorio {
     // --- 6. HISTORIAL VENTAS (REGISTRO INDIVIDUAL) ---
     public void registrarVentaDiaria(String boleta) {   
         try {
-            String fecha = LocalDate.now().toString();//obtiene la fecha, día y hora
-            File carpeta = new File("Registro_Ventas");//prepara una carpeta nueva
-            if (!carpeta.exists()) carpeta.mkdir();//si la carpeta no existe la crea automaticamente con .mkdir
+            String fecha = LocalDate.now().toString();
+            File carpeta = new File("Registro_Ventas");
+            if (!carpeta.exists()) carpeta.mkdir();
             
             File archivo = new File(carpeta, fecha + ".txt");
-            try (BufferedWriter bw = new BufferedWriter(new FileWriter(archivo, true))) {//agrega la nueva boleta al final
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter(archivo, true))) {
                 bw.write(boleta);
                 bw.newLine();
-                bw.write("-----------------------------------");//separata de boletas
+                bw.write("-----------------------------------");
                 bw.newLine();
             }
         } catch (Exception e) {
@@ -104,8 +103,8 @@ public class Repositorio {
     public void generarCierreCaja() {
         String fechaHoy = LocalDate.now().toString();
         
-        File carpeta = new File("Registro_Ventas");//crae un objeto que represente a la carpeta(directorio)
-        File archivoVentas = new File(carpeta, fechaHoy + ".txt"); //esto es la ruta completo "Registro_Ventas/2025-12-19.txt"
+        File carpeta = new File("Registro_Ventas");
+        File archivoVentas = new File(carpeta, fechaHoy + ".txt");
         
         if (!archivoVentas.exists()) {
             javax.swing.JOptionPane.showMessageDialog(null, "No hay ventas registradas hoy.");
@@ -130,7 +129,7 @@ public class Repositorio {
                 
                 // 1. Detectar Método de Pago
                 if (linea.contains("METODO PAGO:")) {
-                    ultimoMetodoDetectado = linea.split(":")[1].trim(); //se guarda que tipo de moneda se usó para pagar 
+                    ultimoMetodoDetectado = linea.split(":")[1].trim();
                 }
                 
                 // 2. Detectar y Sumar Totales (Dinero)
@@ -144,24 +143,19 @@ public class Repositorio {
                     else if (ultimoMetodoDetectado.contains("TARJETA") || ultimoMetodoDetectado.contains("VISA")) totalVisa += monto;
                 }
                 
-                // 3. DETECTAR PRODUCTOS (La línea empieza con guion " - ")
-                // Ejemplo de línea: " - Cemento Sol (x2) : S/ 57.0"
+                // 3. DETECTAR PRODUCTOS
                 if (linea.trim().startsWith("-")) {
                     try {
-                        // Magia para sacar el nombre y la cantidad del texto
                         int inicioNombre = linea.indexOf("-") + 1;
                         int finNombre = linea.indexOf("(x");
                         
-                        // Extraemos el nombre (Ej: "Cemento Sol")
                         String nombreProd = linea.substring(inicioNombre, finNombre).trim();
                         
-                        // Extraemos la cantidad (Ej: "2")
-                        int inicioCant = finNombre + 2; // Saltamos el "(x"
+                        int inicioCant = finNombre + 2;
                         int finCant = linea.indexOf(")");
                         String cantTexto = linea.substring(inicioCant, finCant);
                         int cantidad = Integer.parseInt(cantTexto);
                         
-                        // AGREGAMOS AL MAPA (Si ya existe, sumamos la cantidad nueva)
                         if (conteoProductos.containsKey(nombreProd)) {
                             int cantidadActual = conteoProductos.get(nombreProd);
                             conteoProductos.put(nombreProd, cantidadActual + cantidad);
@@ -170,7 +164,6 @@ public class Repositorio {
                         }
                         
                     } catch (Exception e) {
-                        // Si una línea tiene formato raro, la ignoramos para no romper el reporte
                     }
                 }
             }
@@ -191,8 +184,6 @@ public class Repositorio {
                 bw.write("       DETALLE DE PRODUCTOS VENDIDOS   "); bw.newLine();
                 bw.write("======================================="); bw.newLine();
                 
-                // Escribimos la lista de productos acumulados
-                // Escribimos la lista de productos acumulados CON ALINEACIÓN
                 for (String nombre : conteoProductos.keySet()) {
                     int cantidadFinal = conteoProductos.get(nombre);
                     String lineaBonita = String.format(" * %-25s : %5d und.", nombre, cantidadFinal);
