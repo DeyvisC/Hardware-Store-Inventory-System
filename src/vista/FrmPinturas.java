@@ -9,15 +9,7 @@ package vista;
  * @author Hp
  */
 public class FrmPinturas extends javax.swing.JFrame {
-    // =======================================================
-    //   CATÁLOGO TINTOMÉTRICO (20 COLORES COMERCIALES)
-    // =======================================================
-    // FILAS: 20 Colores
-    // COLUMNAS (5): [0]Blanco, [1]Rojo, [2]Azul, [3]Amarillo, [4]Negro
-    // Los valores suman 1.00 (que es el 100%)
-    // === 1. DECLARAMOS LOS DATOS AQUÍ ARRIBA (GLOBALES) ===
-    
-    // NOMBRES DE LOS 20 COLORES
+
     String[] catalogoColores = {
         "Blanco Puro", "Blanco Humo", "Marfil / Hueso", "Crema Clásico", "Beige Arena",
         "Gris Perla", "Gris Cemento", "Marrón Chocolate", "Negro Absoluto",
@@ -25,10 +17,8 @@ public class FrmPinturas extends javax.swing.JFrame {
         "Rosa Bebé", "Rosa Fucsia", "Rojo Bandera", "Naranja Ladrillo", "Lila Lavanda", "Violeta Intenso"
     };
 
-    // NOMBRES DE LOS TINTES
     String[] tintes = {"Base Blanca", "Tinte Rojo", "Tinte Azul", "Tinte Amarillo", "Tinte Negro"};
 
-    // LA MATRIZ DE RECETAS (20 FILAS x 5 COLUMNAS)
     double[][] matrizRecetas = {
         // BLANCOS
         {1.00, 0.00, 0.00, 0.00, 0.00}, // Blanco Puro
@@ -60,16 +50,13 @@ public class FrmPinturas extends javax.swing.JFrame {
         initComponents();
         this.setLocationRelativeTo(null);
         
-        // A. LLENAR EL COMBO
         cboColores.removeAllItems();
         for (String color : catalogoColores) {
             cboColores.addItem(color);
         }
 
-        // 1. Letra tipo "Máquina de escribir" (alinea bien los números)
         txtReceta.setFont(new java.awt.Font("Monospaced", java.awt.Font.BOLD, 14));
         
-        // 2. Bloquear edición (Para que no se borre al hacer clic)
         txtReceta.setEditable(false);
     }
 
@@ -161,7 +148,6 @@ public class FrmPinturas extends javax.swing.JFrame {
     ticket.append("       FÓRMULA EXACTA           \n");
     ticket.append("--------------------------------\n");
     
-    // BUCLE: Recorremos los 5 Tintes (Columnas)
     for (int col = 0; col < 5; col++) {
         
         double porcentaje = matrizRecetas[fila][col];
@@ -170,8 +156,6 @@ public class FrmPinturas extends javax.swing.JFrame {
             double ml = porcentaje * 4000;
             int pct = (int)(porcentaje * 100);
             
-            // TRUCO DE ALINEACIÓN PROFESIONAL:
-            // Usamos String.format para que quede todo derechito
             String linea = String.format("%-15s : %3d%% (%4.0f ml)", 
                                          tintes[col], pct, ml);       
             ticket.append(linea).append("\n");
