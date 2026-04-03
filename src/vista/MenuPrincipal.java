@@ -126,10 +126,8 @@ public class MenuPrincipal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // Crear y mostrar la ventana de ventas
         VentanaVentas ventana = new VentanaVentas();
         ventana.setVisible(true);
-        // 2. CERRAR EL MENÚ ACTUAL (Esta es la línea que falta)
         this.dispose(); 
       
     }//GEN-LAST:event_jButton1ActionPerformed
@@ -147,14 +145,12 @@ public class MenuPrincipal extends javax.swing.JFrame {
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
       
-        // 1. Confirmación de seguridad
         int confirmar = javax.swing.JOptionPane.showConfirmDialog(this,
             "¿Seguro que desea cerrar la caja del día?\nEsto generará el reporte de ganancias.",
             "Confirmar Cierre",
             javax.swing.JOptionPane.YES_NO_OPTION);
 
-        if (confirmar == 0) { // Si dijo que SÍ
-            // 2. Llamar al método del repositorio
+        if (confirmar == 0) {
             datos.Repositorio repo = new datos.Repositorio();
             repo.generarCierreCaja();
         }
@@ -162,11 +158,9 @@ public class MenuPrincipal extends javax.swing.JFrame {
 
     private void btnAbrirPinturasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAbrirPinturasActionPerformed
        
-    // 1. Abrir la ventana de Pinturas
     FrmPinturas ventana = new FrmPinturas();
     ventana.setVisible(true);
     
-    // 2. CERRAR el Menú actual (para que no estorbe)
     this.dispose(); 
 
     }//GEN-LAST:event_btnAbrirPinturasActionPerformed
