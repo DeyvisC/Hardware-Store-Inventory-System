@@ -95,22 +95,17 @@ public class Login extends javax.swing.JFrame {
 
     private void btnIngresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIngresarActionPerformed
         
-        // 1. Capturamos lo que escribió el usuario
     String usuario = txtUsuario.getText();
     String pass = new String(txtClave.getPassword());
 
-    // 2. Validamos (autonomo / 123)
     if (usuario.equals("autonomo") && pass.equals("123")) {
         
-        // Abrimos el Menú
         MenuPrincipal menu = new MenuPrincipal();
         menu.setVisible(true);
         
-        // Cerramos el Login
         this.dispose();
         
     } else {
-        // Mensaje de error si falla
         javax.swing.JOptionPane.showMessageDialog(this, "¡Usuario o Clave incorrectos!");
        }  
     }//GEN-LAST:event_btnIngresarActionPerformed
