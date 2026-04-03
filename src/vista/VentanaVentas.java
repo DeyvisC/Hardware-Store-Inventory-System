@@ -30,32 +30,26 @@ public class VentanaVentas extends javax.swing.JFrame {
         setLocationRelativeTo(null);
         setTitle("Caja de Ventas - Todo Construcción");
         
-        // Configurar la tabla
         modeloTabla = (DefaultTableModel) tblCarrito.getModel();
         
         cargarComboProductos(); 
         mostrarFecha(); 
     }
     
-    // Método auxiliar para llenar la cajita con los nombres del archivo
     private void cargarComboProductos() {
-        listaProductos = repo.cargarProductos(); // Leemos el TXT
-        cboProductos.removeAllItems(); // Limpiamos por si acaso
+        listaProductos = repo.cargarProductos();
+        cboProductos.removeAllItems();
         
         for (Producto p : listaProductos) {
             cboProductos.addItem(p.getNombre());
         }
         
     }
-     // Muestra la fecha y hora actual en la etiqueta
      private void mostrarFecha() {
-     // 1. Capturamos el momento exacto (Fecha + Hora)
      LocalDateTime ahora = LocalDateTime.now();
 
-    // 2. Le damos formato bonito (Día/Mes/Año Hora:Minuto)
     DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
-    // 3. Lo ponemos en la etiqueta
     lblFecha.setText("FECHA: " + ahora.format(formato));
     
 }
@@ -218,33 +212,27 @@ public class VentanaVentas extends javax.swing.JFrame {
 
     private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
                                       
-        // 1. VERIFICAR QUE HAYA UN PRODUCTO SELECCIONADO EN EL COMBO
         if (cboProductos.getSelectedIndex() == -1) {
              javax.swing.JOptionPane.showMessageDialog(this, "Seleccione un producto");
              return;
         }
 
-        // 2. VALIDACIÓN DE ERRORES (El Airbag 🛡️)
         int cantidad = 0;
         
         try {
-            // Intentamos convertir el texto a número
             cantidad = Integer.parseInt(txtCantidad.getText());
             
-            // VALIDACIÓN 1: ¿Es negativo o cero?
             if (cantidad <= 0) {
                 javax.swing.JOptionPane.showMessageDialog(this, 
                         "¡La cantidad debe ser mayor a 0!", 
                         "Error de Cantidad", 
                         javax.swing.JOptionPane.ERROR_MESSAGE);
-                txtCantidad.setText(""); // Limpiamos la caja
-                txtCantidad.requestFocus(); // Ponemos el cursor ahí
-                return; // Detenemos todo aquí
+                txtCantidad.setText("");
+                txtCantidad.requestFocus();
+                return;
             }
             
         } catch (NumberFormatException e) {
-            // VALIDACIÓN 2: ¿Escribió letras o símbolos?
-            // Si falla la conversión (ej: "hola"), el programa salta directo aquí
             javax.swing.JOptionPane.showMessageDialog(this, 
                     "¡Error! Ingrese solo números enteros.\nNo se permiten letras ni símbolos.", 
                     "Error de Formato", 
@@ -253,9 +241,6 @@ public class VentanaVentas extends javax.swing.JFrame {
             txtCantidad.requestFocus();
             return;
         }
-
-        // --- SI LLEGAMOS AQUÍ, EL NÚMERO ES VÁLIDO ---
-
         // 3. Obtener datos del producto seleccionado
         int indice = cboProductos.getSelectedIndex();
         modelo.Producto productoSeleccionado = listaProductos.get(indice);
@@ -285,17 +270,14 @@ public class VentanaVentas extends javax.swing.JFrame {
         lblTotal.setText("TOTAL A PAGAR: S/ " + totalPagar);
         
         productoSeleccionado.setStock(productoSeleccionado.getStock() - cantidad);
-        txtCantidad.setText(""); // Limpiar para el siguiente
+        txtCantidad.setText("");
         txtCantidad.requestFocus();
         
         
         
         double baseImponible = totalPagar / 1.18;
         double igv = totalPagar - baseImponible;
-        
-        // 2. ACTUALIZAR LAS 3 ETIQUETAS POR SEPARADO
-        // Usamos String.format para que siempre salgan 2 decimales
-        
+                
         lblSubtotal.setText(String.format("Subtotal: S/ %.2f", baseImponible));
         
         lblIGV.setText(String.format("IGV (18%%): S/ %.2f", igv));
@@ -310,9 +292,6 @@ public class VentanaVentas extends javax.swing.JFrame {
             return;
         }
 
-        // ---------------------------------------------------------
-        // 2. SELECCIONAR MÉTODO DE PAGO (SIMULACIÓN)
-        // ---------------------------------------------------------
         String[] opciones = {"Efectivo", "Yape / QR", "Tarjeta Visa"};
         
         int seleccion = JOptionPane.showOptionDialog(
@@ -326,54 +305,43 @@ public class VentanaVentas extends javax.swing.JFrame {
                 opciones[0]
         );
 
-        // Si el usuario cierra la ventana sin elegir, cancelamos la venta
         if (seleccion == -1) {
             return; 
         }
 
         String metodoPago = "";
 
-        // LÓGICA SEGÚN LA OPCIÓN ELEGIDA
         switch (seleccion) {
-            case 0: // Efectivo
+            case 0:
                 metodoPago = "EFECTIVO";
                 break;
-               case 1: // Yape / QR
+               case 1:
                 metodoPago = "YAPE / PLIN";
                 
-                // 1. Cargar la imagen original (Grande)
                 javax.swing.ImageIcon iconoOriginal = new javax.swing.ImageIcon("yape.png");
                 
-                // 2. REDIMENSIONAR (Aquí está el truco)
-                // Obtenemos la imagen, le damos tamaño 200x200 y usamos suavizado (SCALE_SMOOTH)
                 java.awt.Image imagen = iconoOriginal.getImage();
                 java.awt.Image imagenRedimensionada = imagen.getScaledInstance(200, 200, java.awt.Image.SCALE_SMOOTH);
-                
-                // 3. Convertimos de nuevo a Icono
                 javax.swing.ImageIcon iconoMini = new javax.swing.ImageIcon(imagenRedimensionada);
                 
-                // 4. Mostrar el QR pequeño
                 JOptionPane.showMessageDialog(this, 
                         "Muestre este QR al cliente para pagar: S/ " + totalPagar, 
                         "Escanee para pagar", 
                         JOptionPane.PLAIN_MESSAGE, 
-                        iconoMini); // <--- Pasamos el icono ya reducido
+                        iconoMini);
                 break; 
             
                 
-            case 2: // Tarjeta
+            case 2:
                 metodoPago = "TARJETA VISA";
-                // Simulación de procesando...
                 JOptionPane.showMessageDialog(this, "Conectando con POS Visa... \n¡Transacción Aprobada!");
                 break;
         }
         
         
-// CÁLCULOS FINALES
     double baseImponible = totalPagar / 1.18;
     double igv = totalPagar - baseImponible;
 
-    // ARMADO DE LA BOLETA (Usando StringBuilder para orden)
     StringBuilder boleta = new StringBuilder();
     boleta.append("============== CONTRU - MAX S.A.C. ==============\n");
     boleta.append("              RUC: 20123456789\n");
@@ -382,17 +350,14 @@ public class VentanaVentas extends javax.swing.JFrame {
     boleta.append("CANT.   DESCRIPCION             P.UNIT    IMPORTE\n");
     boleta.append("-------------------------------------------------\n");
     
-    // Recorremos la tabla para listar productos
     for (int i = 0; i < modeloTabla.getRowCount(); i++) {
         String nombre = modeloTabla.getValueAt(i, 0).toString();
         String precio = modeloTabla.getValueAt(i, 1).toString();
         String cant = modeloTabla.getValueAt(i, 2).toString();
-        String sub = modeloTabla.getValueAt(i, 3).toString(); // O la columna 4 si agregaste descuentos
+        String sub = modeloTabla.getValueAt(i, 3).toString();
         
-        // Truco visual: Cortamos el nombre si es muy largo para que no descuadre
         if (nombre.length() > 15) nombre = nombre.substring(0, 15);
         
-        // Formato de columnas (tabulaciones manuales)
         boleta.append(String.format("%-5s %-18s %-8s %-8s\n", cant, nombre, precio, sub));
     }
     
@@ -404,10 +369,8 @@ public class VentanaVentas extends javax.swing.JFrame {
     boleta.append("=================================================\n");
     boleta.append("         ¡Gracias por construir con nosotros!");
 
-    // MOSTRAR Y GUARDAR
     javax.swing.JOptionPane.showMessageDialog(this, boleta.toString());
     
-    // Aquí llamas a tu repositorio para guardar en el archivo...
     datos.Repositorio repo = new datos.Repositorio();
     repo.registrarVentaDiaria(boleta.toString());
     
@@ -426,7 +389,6 @@ public class VentanaVentas extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
 
-        // 1. VERIFICAR SI SELECCIONÓ UNA FILA
         int filaSeleccionada = tblCarrito.getSelectedRow();
         
         if (filaSeleccionada == -1) {
@@ -437,27 +399,20 @@ public class VentanaVentas extends javax.swing.JFrame {
             return;
         }
 
-        // 2. RECUPERAR DATOS DE LA FILA ANTES DE BORRARLA
-        // Necesitamos saber qué producto es y cuánto costaba para restar el total
         String nombre = modeloTabla.getValueAt(filaSeleccionada, 0).toString();
         int cantidad = Integer.parseInt(modeloTabla.getValueAt(filaSeleccionada, 2).toString());
         double subtotal = Double.parseDouble(modeloTabla.getValueAt(filaSeleccionada, 3).toString());
         
-        // 3. DEVOLVER EL STOCK (Lógica Inversa)
-        // Buscamos el producto en tu lista original y le sumamos lo que vamos a quitar
         for (modelo.Producto p : listaProductos) {
             if (p.getNombre().equals(nombre)) {
-                // ¡Aquí ocurre la magia! Devolvemos el stock.
                 p.setStock(p.getStock() + cantidad);
                 break; 
             }
         }
         
-        // 4. RESTAR AL TOTAL A PAGAR
         totalPagar = totalPagar - subtotal;
         lblTotal.setText("TOTAL A PAGAR: S/ " + totalPagar);
         
-        // 5. BORRAR LA FILA DE LA TABLA
         modeloTabla.removeRow(filaSeleccionada);
         
         javax.swing.JOptionPane.showMessageDialog(this, "Producto retirado del carrito.");
@@ -466,10 +421,7 @@ public class VentanaVentas extends javax.swing.JFrame {
         
         double baseImponible = totalPagar / 1.18;
         double igv = totalPagar - baseImponible;
-        
-        // 2. ACTUALIZAR LAS 3 ETIQUETAS POR SEPARADO
-        // Usamos String.format para que siempre salgan 2 decimales
-        
+                
         lblSubtotal.setText(String.format("Subtotal: S/ %.2f", baseImponible));
         
         lblIGV.setText(String.format("IGV (18%%): S/ %.2f", igv));
